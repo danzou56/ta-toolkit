@@ -71,8 +71,10 @@ total_students = len(student_dir)
 print('Students: {}'.format(total_students))
 
 print('TA assignments:')
-ta_assignment = list(math.ceil(total_students * ta.percentage) for ta in ta_list)
-ta_assignment[-1] -= sum(ta_assignment) - total_students
+rem = total_students % len(ta_list)
+ta_assignment = list(
+	math.floor(total_students * ta.percentage) + (1 if i < rem else 0) for i, ta in enumerate(ta_list)
+)
 for (ta, num) in zip(ta_list, ta_assignment):
 	print('  · {}: {} students'.format(ta.name, num))
 
