@@ -64,9 +64,9 @@ def move_assignment(student_dir, ta, instructions):
 
 student_dir = sorted(os.listdir(assignment_dir + '/raw'))
 try:
-    student_dir.remove('.DS_Store')
+	student_dir.remove('.DS_Store')
 except:
-    pass
+	pass
 total_students = len(student_dir)
 print('Students: {}'.format(total_students))
 
