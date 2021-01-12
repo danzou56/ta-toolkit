@@ -40,12 +40,13 @@ random.shuffle(ta_list)
 # | Assignment handler |
 # +====================+
 
-
+raw_path = os.path.join(assignment_dir, 'raw')
+new_path = os.path.join(assignment_dir, 'dist')
 
 def move_assignment(student_dir, ta, instructions):
 	student = student_dir.split('-',1)[0]
-	student_raw_path = os.path.join(assignment_dir, 'raw', student_dir)
-	student_new_path = os.path.join(assignment_dir, 'dist', ta.name, student)
+	student_raw_path = os.path.join(raw_path, student_dir)
+	student_new_path = os.path.join(new_path, ta.name, student)
 	os.makedirs(student_new_path, exist_ok=True)
 	for (inst, inst_path) in instructions:
 		for root, dirs, files in os.walk(student_raw_path):
@@ -62,7 +63,7 @@ def move_assignment(student_dir, ta, instructions):
 					copy_tree(root, student_new_path)
 
 
-student_dir = sorted(os.listdir(assignment_dir + '/raw'))
+student_dir = sorted(os.listdir(raw_path))
 try:
 	student_dir.remove('.DS_Store')
 except:
@@ -78,8 +79,8 @@ for (ta, num) in zip(ta_list, ta_assignment):
 
 assigment_split = [0] + list(np.cumsum(ta_assignment))[:-1]
 
-shutil.rmtree(os.path.join(assignment_dir, 'dist'), ignore_errors=True)
-os.makedirs(os.path.join(assignment_dir, 'dist'), exist_ok=True)
+shutil.rmtree(new_path, ignore_errors=True)
+os.makedirs(new_path, exist_ok=True)
 
 for (ta, index, num) in zip(ta_list, assigment_split, ta_assignment):
 	os.makedirs(os.path.join(assignment_dir, 'dist', ta.name), exist_ok=True)
