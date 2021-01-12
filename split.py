@@ -63,11 +63,7 @@ def move_assignment(student_dir, ta, instructions):
 					copy_tree(root, student_new_path)
 
 
-student_dir = sorted(os.listdir(raw_path))
-try:
-	student_dir.remove('.DS_Store')
-except:
-	pass
+student_dir = sorted(f.name for f in os.scandir(raw_path) if f.is_dir())
 total_students = len(student_dir)
 print('Students: {}'.format(total_students))
 
