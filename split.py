@@ -4,7 +4,6 @@ import os
 import sys
 import random
 import math
-import numpy as np
 import hashlib
 import shutil
 from distutils.dir_util import copy_tree
@@ -75,13 +74,13 @@ ta_assignment = list(
 for (ta, num) in zip(ta_list, ta_assignment):
 	print('  · {}: {} students'.format(ta.name, num))
 
-assigment_split = [0] + list(np.cumsum(ta_assignment))[:-1]
-
 shutil.rmtree(new_path, ignore_errors=True)
 os.makedirs(new_path, exist_ok=True)
 
-for (ta, index, num) in zip(ta_list, assigment_split, ta_assignment):
-	os.makedirs(os.path.join(assignment_dir, 'dist', ta.name), exist_ok=True)
-	ta.setStudents(student_dir[index : (index + num)])
+index = 0
+for ta, num in zip(ta_list, ta_assignment):
+	os.makedirs(os.path.join(new_path, ta.name), exist_ok=True)
+	ta.setStudents(student_dir[index:index + num])
+	index += num
 	for student in ta.students:
 		move_assignment(student, ta, config['files'])
