@@ -4,7 +4,6 @@ import os
 import sys
 import random
 import math
-import numpy as np
 import hashlib
 import shutil
 from distutils.dir_util import copy_tree
@@ -31,10 +30,13 @@ def distribute(assignment_dir):
 	# | Assignment handler |
 	# +====================+
 
+	raw_path = os.path.join(assignment_dir, 'raw')
+	new_path = os.path.join(assignment_dir, 'dist')
+
 	def move_assignment(student_dir, ta, instructions):
-		student = student_dir.split('-',1)[0]
-		student_raw_path = os.path.join(assignment_dir, 'raw', student_dir)
-		student_new_path = os.path.join(assignment_dir, 'dist', ta.name, student)
+		student = student_dir.split('-', 1)[0]
+		student_raw_path = os.path.join(raw_path, student_dir)
+		student_new_path = os.path.join(new_path, ta.name, student)
 		os.makedirs(student_new_path, exist_ok=True)
 		for (inst, inst_path) in instructions:
 			for root, dirs, files in os.walk(student_raw_path):
@@ -45,31 +47,31 @@ def distribute(assignment_dir):
 						os.path.join(student_new_path, inst_path)
 					)
 				elif ((inst == 'folder' and inst_path == os.path.basename(root)) or
-					(inst == 'folder_with' and inst_path in files)):
+					  (inst == 'folder_with' and inst_path in files)):
 					# COPY THE ENTIRE FOLDER
 					if not set(config['extensions']).isdisjoint({os.path.splitext(f)[1] for f in files}):
 						copy_tree(root, student_new_path)
 
-
-	student_dir = sorted(os.listdir(assignment_dir + '/raw'))
-	student_dir.remove('.DS_Store')
+	student_dir = sorted(f.name for f in os.scandir(raw_path) if f.is_dir())
 	total_students = len(student_dir)
 	print('Students: {}'.format(total_students))
 
 	print('TA assignments:')
-	ta_assignment = list(math.ceil(total_students * ta.percentage) for ta in ta_list)
-	ta_assignment[-1] -= sum(ta_assignment) - total_students
+	rem = total_students % len(ta_list)
+	ta_assignment = list(
+		math.floor(total_students * ta.percentage) + (1 if i < rem else 0) for i, ta in enumerate(ta_list)
+	)
 	for (ta, num) in zip(ta_list, ta_assignment):
 		print('  · {}: {} students'.format(ta.name, num))
 
-	assigment_split = [0] + list(np.cumsum(ta_assignment))[:-1]
+	shutil.rmtree(new_path, ignore_errors=True)
+	os.makedirs(new_path, exist_ok=True)
 
-	shutil.rmtree(os.path.join(assignment_dir, 'dist'), ignore_errors=True)
-	os.makedirs(os.path.join(assignment_dir, 'dist'), exist_ok=True)
-
-	for (ta, index, num) in zip(ta_list, assigment_split, ta_assignment):
-		os.makedirs(os.path.join(assignment_dir, 'dist', ta.name), exist_ok=True)
-		ta.setStudents(student_dir[index : (index + num)])
+	index = 0
+	for ta, num in zip(ta_list, ta_assignment):
+		os.makedirs(os.path.join(new_path, ta.name), exist_ok=True)
+		ta.setStudents(student_dir[index:index + num])
+		index += num
 		for student in ta.students:
 			move_assignment(student, ta, config['files'])
 
