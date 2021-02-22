@@ -90,15 +90,17 @@ if __name__ == '__main__':
 					'./split.py P6',
 		formatter_class=RawTextHelpFormatter
 	)
-	parser.add_argument('assignment_dir', help='Directory where student submissions are located.\n'
-											   'Directory structure should be as follows: \n'
-											   'assignment_dir/\n'
-											   '├── raw/\n'
-											   '│   ├── student1/\n'
-											   '│   ├── student2/\n'
-											   '│   └── ...\n'
-											   '└── config.py'
-						)
+	parser.add_argument(
+		'assignment_dir',
+		help='Directory where student submissions are located.\n'
+			 'Directory structure should be as follows: \n'
+			 'assignment_dir/\n'
+			 '├── raw/\n'
+			 '│   ├── student1/\n'
+			 '│   ├── student2/\n'
+			 '│   └── ...\n'
+			 '└── config.py'
+	)
 
 	args = parser.parse_args()
 
