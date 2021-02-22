@@ -25,6 +25,9 @@ class TeachingAssistant:
 	def setStudents(self, list_students):
 		self.students = list_students
 
+	def __str__(self):
+		return self.name + ': ' + self.percentage.__str__()
+
 
 ta_list = [
 
