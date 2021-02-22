@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import csv
 import os
 import sys
 import random
@@ -74,6 +74,16 @@ def distribute(assignment_dir):
 		index += num
 		for student in ta.students:
 			move_assignment(student, ta, config['files'])
+
+	with open(os.path.join(assignment_dir, 'dist.txt'), 'w') as f:
+		csv_writer = csv.writer(f, delimiter=': ')
+		csv_writer.writerows([
+			[
+				ta.name,
+				', '.join([student.split('-', 1)[0] for student in ta.students])
+			]
+			for ta in ta_list
+		])
 
 
 if __name__ == '__main__':
