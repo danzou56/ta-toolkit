@@ -37,14 +37,18 @@ ta_list = [
 	TeachingAssistant('Gregory', GRADING_p),
 	TeachingAssistant('Hamid', GRADING_p),
 	TeachingAssistant('Onur', GRADING_p),
+	TeachingAssistant('Mohammad', GRADING_p),
 
 	# Teaching TAs
-	TeachingAssistant('Dan', LEAD_p),
-	TeachingAssistant('Vlad', LEAD_p),
 	TeachingAssistant('Alexis', TEACHING_p),
 	TeachingAssistant('Arjun', TEACHING_p),
 	TeachingAssistant('Dhanvee', TEACHING_p),
 	TeachingAssistant('Gabriel', TEACHING_p),
+	TeachingAssistant('Matthew', TEACHING_p),
+	TeachingAssistant('Nikolay', TEACHING_p),
+
+	TeachingAssistant('Dan', LEAD_p),
+	TeachingAssistant('Vlad', LEAD_p),
 ]
 
 # Checking for name duplicates
