@@ -6,6 +6,7 @@ import random
 import math
 import hashlib
 import shutil
+import re
 from distutils.dir_util import copy_tree
 
 def distribute(assignment_dir):
@@ -75,12 +76,14 @@ def distribute(assignment_dir):
 		for student in ta.students:
 			move_assignment(student, ta, config['files'])
 
+	# Create file with which TAs have which students
 	with open(os.path.join(assignment_dir, 'dist.txt'), 'w') as f:
-		csv_writer = csv.writer(f, delimiter=': ')
+		# overbuilt but whatever
+		csv_writer = csv.writer(f, delimiter=':')
 		csv_writer.writerows([
 			[
 				ta.name,
-				', '.join([student.split('-', 1)[0] for student in ta.students])
+				','.join([re.split(r'[\-_]', student, 1)[0] for student in ta.students])
 			]
 			for ta in ta_list
 		])
