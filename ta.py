@@ -12,9 +12,10 @@ import hashlib
 # | TA handler |
 # +============+
 
-LEAD_p = 8
-TEACHING_p = 8
+LEAD_p = 7
+TEACHING_p = 7
 GRADING_p = 12
+GREG_p = 10
 
 class TeachingAssistant:
 
@@ -34,10 +35,10 @@ ta_list = [
 	# Grading TAs
 	TeachingAssistant('Ahmed', GRADING_p),
 	TeachingAssistant('Chujun', GRADING_p),
-	TeachingAssistant('Gregory', GRADING_p),
+	TeachingAssistant('Gregory', GREG_p),
 	TeachingAssistant('Hamid', GRADING_p),
 	TeachingAssistant('Onur', GRADING_p),
-	TeachingAssistant('Mohammad', GRADING_p),
+	TeachingAssistant('Mohammad', TEACHING_p),
 
 	# Teaching TAs
 	TeachingAssistant('Alexis', TEACHING_p),
