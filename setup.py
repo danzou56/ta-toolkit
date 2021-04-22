@@ -2,9 +2,10 @@ from setuptools import setup
 
 
 setup(
-    name='ta-toolkit',
+    name='tatoolkit',
     version='0.1',
-    packages=[''],
+    packages=['tatoolkit'],
+    scripts=['bin/split_assgn'],
     url='',
     license='',
     author='Dan Zou',

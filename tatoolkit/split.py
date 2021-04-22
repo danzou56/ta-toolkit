@@ -7,6 +7,33 @@ import math
 import hashlib
 import shutil
 from distutils.dir_util import copy_tree
+from argparse import ArgumentParser, RawTextHelpFormatter
+
+parser = ArgumentParser(
+	description='Distribute grading of student project submissions among TAs. \n\n'
+				'After running the script, a new folder called dist '
+				'will be created as a subdirectory of assignment_dir '
+				'containing TA names. Each TA folder will have their '
+				'assigned students. \n\n'
+				'example usage:\n'
+				'python3 split.py P6\n'
+				'./split.py P6',
+	formatter_class=RawTextHelpFormatter
+)
+parser.add_argument(
+	'assignment_dir',
+	help='Directory where student submissions are located.\n'
+		 'Directory structure should be as follows: \n'
+		 'assignment_dir/\n'
+		 '├── raw/\n'
+		 '│   ├── student1/\n'
+		 '│   ├── student2/\n'
+		 '│   └── ...\n'
+		 '└── config.py'
+)
+
+args = parser.parse_args()
+
 
 def distribute(assignment_dir):
 	from ta import normalize_ta_list, ta_list
@@ -76,32 +103,9 @@ def distribute(assignment_dir):
 			move_assignment(student, ta, config['files'])
 
 
-if __name__ == '__main__':
-	from argparse import ArgumentParser, RawTextHelpFormatter
-
-	parser = ArgumentParser(
-		description='Distribute grading of student project submissions among TAs. \n\n'
-					'After running the script, a new folder called dist '
-					'will be created as a subdirectory of assignment_dir '
-					'containing TA names. Each TA folder will have their '
-					'assigned students. \n\n'
-					'example usage:\n'
-					'python3 split.py P6\n'
-					'./split.py P6',
-		formatter_class=RawTextHelpFormatter
-	)
-	parser.add_argument(
-		'assignment_dir',
-		help='Directory where student submissions are located.\n'
-			 'Directory structure should be as follows: \n'
-			 'assignment_dir/\n'
-			 '├── raw/\n'
-			 '│   ├── student1/\n'
-			 '│   ├── student2/\n'
-			 '│   └── ...\n'
-			 '└── config.py'
-	)
-
-	args = parser.parse_args()
-
+def main():
 	distribute(args.assignment_dir)
+
+
+if __name__ == '__main__':
+	main()
