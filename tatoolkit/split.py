@@ -131,7 +131,7 @@ def distribute(ta_list):
 		ta_assignment = list(p + (1 if i < rem else 0) for i, p in enumerate(ta_assignment))
 	for (ta, num) in zip(ta_list, ta_assignment):
 		print('  · {}: {} students'.format(ta.name, num))
-	assert(sum(ta_assignment) == total_students, "Number of students to grade didn't match ta assignment!")
+	assert sum(ta_assignment) == total_students, "Number of students to grade didn't match ta assignment!"
 
 	shutil.rmtree(new_path, ignore_errors=True)
 	os.makedirs(new_path, exist_ok=True)
@@ -151,15 +151,10 @@ def distribute(ta_list):
 
 	# Create file with which TAs have which students
 	with open(os.path.join(args.assignment_dir, 'dist.txt'), 'w') as f:
-		# overbuilt but whatever
-		csv_writer = csv.writer(f, delimiter=':')
-		csv_writer.writerows([
-			[
-				ta.name,
-				','.join([re.split(r'[\-_]', student, 1)[0] for student in ta.students])
-			]
-			for ta in ta_list
-		])
+		for ta in ta_list:
+			f.write(f"====== {ta.name} ======\n")
+			f.write(', '.join([re.split(r'[\-_]', student, 1)[0] for student in ta.students]))
+			f.write("\n")
 
 
 def main():
