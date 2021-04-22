@@ -15,10 +15,11 @@ parser = ArgumentParser(
 				'After running the script, a new folder called dist '
 				'will be created as a subdirectory of assignment_dir '
 				'containing TA names. Each TA folder will have their '
-				'assigned students. \n\n'
+				'assigned students. \n'
+				'\n'
 				'example usage:\n'
-				'python3 split.py P6\n'
-				'./split.py P6',
+				'python3 split.py P6 --files Utilities.java\n'
+				'./split.py P6 -fi Utilities.java',
 	formatter_class=RawTextHelpFormatter
 )
 parser.add_argument(
@@ -26,26 +27,66 @@ parser.add_argument(
 	help='Directory where student submissions are located.\n'
 		 'Directory structure should be as follows: \n'
 		 'assignment_dir/\n'
+		 '└── raw/\n'
+		 '    ├── student1/\n'
+		 '    ├── student2/\n'
+		 '    └── ...\n'
+		 '\n'
+		 'If using legacy mode, the structure should be as follows: \n'
+		 'assignment_dir/\n'
 		 '├── raw/\n'
 		 '│   ├── student1/\n'
 		 '│   ├── student2/\n'
 		 '│   └── ...\n'
 		 '└── config.py'
 )
+parser.add_argument(
+	'--files', '-fi', metavar='N', nargs='+', default=[],
+	help='Include these files'
+)
+parser.add_argument(
+	'--folders', '-fo', metavar='N', nargs='+', default=[],
+	help='Include these folders'
+)
+parser.add_argument(
+	'--folder-with', '-fw', metavar='N', nargs='+', default=[],
+	help='Include the folders in which the following files are found'
+)
+parser.add_argument(
+	'--extensions', '-ei', metavar='N', nargs='+', default=[],
+	help='Include only these extensions. Ignored by --files. It is possible to '
+		 'exclude the file specified in --folder-with if the file\'s extension '
+		 'is not included.'
+)
+parser.add_argument(
+	'--csv', '-c', metavar='CSV', default='tas.csv',
+	help='Specify TA weighting via a CSV file. The file should have no headers, '
+		 'and the columns should be the TA name, followed by their assigned '
+		 'weight (weights do not have to add up to 100; they will be '
+		 'normalized).'
+)
+parser.add_argument(
+	'--legacy', '-l', default=False, action='store_true',
+	help="Use legacy verison. Because the legacy version gets its configuration "
+		 "from the config.py file, supplying --legacy will cause any other flags "
+		 "to be ignored.",
+)
 
 args = parser.parse_args()
 
 
-def distribute(assignment_dir):
-	from ta import normalize_ta_list, ta_list
-	sys.path.insert(0, assignment_dir)
-	from config import config
+def get_ta_list():
+	import csv
+	from ta import TeachingAssistant, normalize_ta_list
 
-	# Filtering the list
-	if 'tas' in config:
-		ta_list = [ta for ta in ta_list if not ta.name not in config['tas']]
+	with open(args.csv, 'r') as f:
+		rdr = csv.reader(f)
+		ta_list = [TeachingAssistant(row[0], row[1]) for row in rdr]
+		return normalize_ta_list(ta_list)
 
-	ta_list = normalize_ta_list(ta_list)
+
+def distribute(ta_list):
+	assignment_dir = args.assignment_dir
 
 	# The random generator should be consistent when running the code
 	#  for the same assigment. In this way, modifications can be done without
@@ -77,7 +118,7 @@ def distribute(assignment_dir):
 				elif ((inst == 'folder' and inst_path == os.path.basename(root)) or
 					  (inst == 'folder_with' and inst_path in files)):
 					# COPY THE ENTIRE FOLDER
-					if not set(config['extensions']).isdisjoint({os.path.splitext(f)[1] for f in files}):
+					if not set(args.extensions).isdisjoint({os.path.splitext(f)[1] for f in files}):
 						copy_tree(root, student_new_path)
 
 	student_dir = sorted(f.name for f in os.scandir(raw_path) if f.is_dir() and not f.name[:8] == 'psadeghi')
@@ -98,13 +139,18 @@ def distribute(assignment_dir):
 	shutil.rmtree(new_path, ignore_errors=True)
 	os.makedirs(new_path, exist_ok=True)
 
+	instructions = []
+	instructions.append([('file', s) for s in args.files])
+	instructions.append([('folder', s) for s in args.folders])
+	instructions.append([('folder_with', s) for s in args.folder_with])
+
 	index = 0
 	for ta, num in zip(ta_list, ta_assignment):
 		os.makedirs(os.path.join(new_path, ta.name), exist_ok=True)
 		ta.setStudents(student_dir[index:index + num])
 		index += num
 		for student in ta.students:
-			move_assignment(student, ta, config['files'])
+			move_assignment(student, ta, instructions)
 
 	# Create file with which TAs have which students
 	with open(os.path.join(assignment_dir, 'dist.txt'), 'w') as f:
@@ -120,7 +166,13 @@ def distribute(assignment_dir):
 
 
 def main():
-	distribute(args.assignment_dir)
+	if args.legacy:
+		from tatoolkit import split_leg
+		split_leg.distribute(args.assignment_dir)
+		return
+
+	ta_list = get_ta_list()
+	distribute(ta_list)
 
 
 if __name__ == '__main__':
