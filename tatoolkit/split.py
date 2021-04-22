@@ -137,9 +137,9 @@ def distribute(ta_list):
 	os.makedirs(new_path, exist_ok=True)
 
 	instructions = []
-	instructions.append([('file', s) for s in args.files])
-	instructions.append([('folder', s) for s in args.folders])
-	instructions.append([('folder_with', s) for s in args.folder_with])
+	instructions.extend([('file', s) for s in args.files])
+	instructions.extend([('folder', s) for s in args.folders])
+	instructions.extend([('folder_with', s) for s in args.folder_with])
 
 	index = 0
 	for ta, num in zip(ta_list, ta_assignment):
@@ -166,6 +166,11 @@ def main():
 	if args.legacy:
 		from tatoolkit import split_leg
 		split_leg.distribute(args.assignment_dir)
+		return
+
+	if not (args.files or args.folders or args.folder_with):
+		print("No files or folders specified; nothing will happen!")
+		print("Aborting now!")
 		return
 
 	ta_list = get_ta_list()
