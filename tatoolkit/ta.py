@@ -12,9 +12,10 @@ import hashlib
 # | TA handler |
 # +============+
 
-LEAD_p = 1
-GRAD_p = 2
-UNDERGRAD_p = 1
+LEAD_p = 7
+TEACHING_p = 7
+GRADING_p = 12
+GREG_p = 10
 
 class TeachingAssistant:
 
@@ -31,18 +32,24 @@ class TeachingAssistant:
 
 ta_list = [
 
-	# Lead TA
-	TeachingAssistant('Alejandro', LEAD_p),
+	# Grading TAs
+	TeachingAssistant('Ahmed', GRADING_p),
+	TeachingAssistant('Chujun', GRADING_p),
+	TeachingAssistant('Gregory', GREG_p),
+	TeachingAssistant('Hamid', GRADING_p),
+	TeachingAssistant('Onur', GRADING_p),
+	TeachingAssistant('Mohammad', TEACHING_p),
 
-	# Graduate TAs
-	TeachingAssistant('Ahmed', GRAD_p),
-	TeachingAssistant('Nishant', GRAD_p),
-	TeachingAssistant('Pedro', GRAD_p),
+	# Teaching TAs
+	TeachingAssistant('Alexis', TEACHING_p),
+	TeachingAssistant('Arjun', TEACHING_p),
+	TeachingAssistant('Dhanvee', TEACHING_p),
+	TeachingAssistant('Gabriel', TEACHING_p),
+	TeachingAssistant('Matthew', TEACHING_p),
+	TeachingAssistant('Nikolay', TEACHING_p),
 
-
-	# Undegraduate TAs
-	TeachingAssistant('Dan', UNDERGRAD_p),
-	TeachingAssistant('Vlad', UNDERGRAD_p),
+	TeachingAssistant('Dan', LEAD_p),
+	TeachingAssistant('Vlad', LEAD_p),
 ]
 
 # Checking for name duplicates

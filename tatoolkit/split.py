@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-
+import csv
 import os
 import sys
 import random
 import math
 import hashlib
 import shutil
+import re
 from distutils.dir_util import copy_tree
 from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -79,17 +80,20 @@ def distribute(assignment_dir):
 					if not set(config['extensions']).isdisjoint({os.path.splitext(f)[1] for f in files}):
 						copy_tree(root, student_new_path)
 
-	student_dir = sorted(f.name for f in os.scandir(raw_path) if f.is_dir())
+	student_dir = sorted(f.name for f in os.scandir(raw_path) if f.is_dir() and not f.name[:8] == 'psadeghi')
 	total_students = len(student_dir)
 	print('Students: {}'.format(total_students))
 
 	print('TA assignments:')
-	rem = total_students % len(ta_list)
 	ta_assignment = list(
-		math.floor(total_students * ta.percentage) + (1 if i < rem else 0) for i, ta in enumerate(ta_list)
+		math.floor(total_students * ta.percentage) for i, ta in enumerate(ta_list)
 	)
+	rem = total_students - sum(ta_assignment)
+	if rem > 0:
+		ta_assignment = list(p + (1 if i < rem else 0) for i, p in enumerate(ta_assignment))
 	for (ta, num) in zip(ta_list, ta_assignment):
 		print('  · {}: {} students'.format(ta.name, num))
+	assert(sum(ta_assignment) == total_students, "Number of students to grade didn't match ta assignment!")
 
 	shutil.rmtree(new_path, ignore_errors=True)
 	os.makedirs(new_path, exist_ok=True)
@@ -102,6 +106,18 @@ def distribute(assignment_dir):
 		for student in ta.students:
 			move_assignment(student, ta, config['files'])
 
+	# Create file with which TAs have which students
+	with open(os.path.join(assignment_dir, 'dist.txt'), 'w') as f:
+		# overbuilt but whatever
+		csv_writer = csv.writer(f, delimiter=':')
+		csv_writer.writerows([
+			[
+				ta.name,
+				','.join([re.split(r'[\-_]', student, 1)[0] for student in ta.students])
+			]
+			for ta in ta_list
+		])
+
 
 def main():
 	distribute(args.assignment_dir)
@@ -109,3 +125,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
