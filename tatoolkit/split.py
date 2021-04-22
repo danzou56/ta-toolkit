@@ -65,7 +65,12 @@ parser.add_argument(
 	help='Specify TA weighting via a CSV file. The file should have no headers, '
 		 'and the columns should be the TA name, followed by their SID, and '
 		 'finally their assigned weight (weights do not have to add up to 100; '
-		 'they will be normalized).'
+		 'they will be normalized). Supplied SIDs will be excluded from the '
+		 'distribution.'
+)
+parser.add_argument(
+	'--exclude-sids', '-es', metavar='N', nargs='+', default=[],
+	help='Any additional SIDs to exclude from the distribution.'
 )
 parser.add_argument(
 	'--legacy', '-l', default=False, action='store_true',
@@ -77,15 +82,22 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+def get_student_from_submission(submission_str):
+	# include negative lookahead to prevent splitting psadeghi-student
+	# Damn non-standard SIDs >:(
+	return re.split(r'[\-](?!student)', submission_str, 1)[0]
+
+
 def get_ta_list():
 	with open(args.csv, 'r') as f:
 		rdr = csv.reader(f)
-		ta_list = [TeachingAssistant(row[0], int(row[1])) for row in rdr if int(row[1]) > 0]
-		return normalize_ta_list(ta_list)
+		ta_list = [TeachingAssistant(row[0], int(row[2]), sid=row[1]) for row in rdr]
+		args.exclude_sids.extend(ta.sid for ta in ta_list)
+		return normalize_ta_list([ta for ta in ta_list if ta.percentage > 0])
 
 
 def move_submission(student_dir, ta, instructions, raw_path, new_path):
-	student = student_dir.split('-', 1)[0]
+	student = get_student_from_submission(student_dir)
 	student_raw_path = os.path.join(raw_path, student_dir)
 	student_new_path = os.path.join(new_path, ta.name, student)
 	os.makedirs(student_new_path, exist_ok=True)
@@ -124,7 +136,7 @@ def write_dist(ta_list):
 	with open(os.path.join(args.assignment_dir, 'dist.txt'), 'w') as f:
 		for ta in ta_list:
 			f.write(f"====== {ta.name} ======\n")
-			f.write(', '.join([re.split(r'[\-_]', student, 1)[0] for student in ta.students]))
+			f.write(', '.join([get_student_from_submission(student) for student in ta.students]))
 			f.write("\n")
 
 
@@ -154,7 +166,8 @@ def main():
 	raw_path = os.path.join(args.assignment_dir, 'raw')
 
 	# Get students
-	student_list = sorted(f.name for f in os.scandir(raw_path) if f.is_dir() and not f.name[:8] == 'psadeghi')
+	student_list = sorted(f.name for f in os.scandir(raw_path) if f.is_dir())
+	student_list = [s for s in student_list if get_student_from_submission(s) not in args.exclude_sids]
 	ta_assignment = assign_ta_load(ta_list, len(student_list))
 
 	# Build instructions from args

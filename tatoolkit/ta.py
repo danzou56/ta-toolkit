@@ -11,8 +11,9 @@ GREG_p = 10
 
 class TeachingAssistant:
 
-	def __init__(self, name, percentage):
+	def __init__(self, name, percentage, sid=None):
 		self.name = name
+		self.sid = sid
 		self.percentage = float(percentage)
 
 	def setStudents(self, list_students):
