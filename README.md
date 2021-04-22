@@ -2,7 +2,9 @@
 
 This pip package provides a utility to distribute grading load among TAs using
 files downloaded from the UMD submit server. The pip package also includes
-`mossum` as a dependency so Moss results are easier to analyze.
+`mossum` as a dependency so Moss results are easier to analyze (specifically, 
+it will install a personally modified version of `mossum`; you can change this
+in `setup.py`).
 
 ## Why is this a pip package?
 
