@@ -66,7 +66,8 @@ parser.add_argument(
 		 'and the columns should be the TA name, followed by their SID, and '
 		 'finally their assigned weight (weights do not have to add up to 100; '
 		 'they will be normalized). Supplied SIDs will be excluded from the '
-		 'distribution.'
+		 'distribution. Extra columns are ignored (maybe use them for '
+		 'comments? 🙂).'
 )
 parser.add_argument(
 	'--exclude-sids', '-es', metavar='N', nargs='+', default=[],
