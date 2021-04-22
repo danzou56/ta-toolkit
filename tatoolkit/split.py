@@ -10,7 +10,7 @@ import shutil
 from argparse import ArgumentParser, RawTextHelpFormatter
 from distutils.dir_util import copy_tree
 
-from ta import TeachingAssistant, normalize_ta_list
+from tatoolkit.ta import TeachingAssistant, normalize_ta_list
 
 parser = ArgumentParser(
 	description='Distribute grading of student project submissions among TAs. \n\n'
