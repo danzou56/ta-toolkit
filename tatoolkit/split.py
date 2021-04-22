@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
+
 import csv
-import os
-import sys
-import random
-import math
 import hashlib
-import shutil
+import math
+import os
+import random
 import re
-from distutils.dir_util import copy_tree
+import shutil
 from argparse import ArgumentParser, RawTextHelpFormatter
+from distutils.dir_util import copy_tree
+
+from ta import TeachingAssistant, normalize_ta_list
 
 parser = ArgumentParser(
 	description='Distribute grading of student project submissions among TAs. \n\n'
@@ -76,31 +78,26 @@ args = parser.parse_args()
 
 
 def get_ta_list():
-	import csv
-	from ta import TeachingAssistant, normalize_ta_list
-
 	with open(args.csv, 'r') as f:
 		rdr = csv.reader(f)
-		ta_list = [TeachingAssistant(row[0], row[1]) for row in rdr]
+		ta_list = [TeachingAssistant(row[0], int(row[1])) for row in rdr]
 		return normalize_ta_list(ta_list)
 
 
 def distribute(ta_list):
-	assignment_dir = args.assignment_dir
-
 	# The random generator should be consistent when running the code
 	#  for the same assigment. In this way, modifications can be done without
 	#  affecting the students assigned to each TA. To achieve this, the seed
 	#  for the random library is set using the hash of the assignment name.
-	random.seed(int(hashlib.sha1(assignment_dir.encode("utf-8")).hexdigest(), 16))
+	random.seed(int(hashlib.sha1(args.assignment_dir.encode("utf-8")).hexdigest(), 16))
 	random.shuffle(ta_list)
 
 	# +====================+
 	# | Assignment handler |
 	# +====================+
 
-	raw_path = os.path.join(assignment_dir, 'raw')
-	new_path = os.path.join(assignment_dir, 'dist')
+	raw_path = os.path.join(args.assignment_dir, 'raw')
+	new_path = os.path.join(args.assignment_dir, 'dist')
 
 	def move_assignment(student_dir, ta, instructions):
 		student = student_dir.split('-', 1)[0]
@@ -153,7 +150,7 @@ def distribute(ta_list):
 			move_assignment(student, ta, instructions)
 
 	# Create file with which TAs have which students
-	with open(os.path.join(assignment_dir, 'dist.txt'), 'w') as f:
+	with open(os.path.join(args.assignment_dir, 'dist.txt'), 'w') as f:
 		# overbuilt but whatever
 		csv_writer = csv.writer(f, delimiter=':')
 		csv_writer.writerows([
