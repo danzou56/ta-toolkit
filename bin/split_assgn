@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+from tatoolkit import split
+
+if __name__ == "__main__":
+    split.main()

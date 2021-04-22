@@ -8,6 +8,33 @@ import hashlib
 import shutil
 import re
 from distutils.dir_util import copy_tree
+from argparse import ArgumentParser, RawTextHelpFormatter
+
+parser = ArgumentParser(
+	description='Distribute grading of student project submissions among TAs. \n\n'
+				'After running the script, a new folder called dist '
+				'will be created as a subdirectory of assignment_dir '
+				'containing TA names. Each TA folder will have their '
+				'assigned students. \n\n'
+				'example usage:\n'
+				'python3 split.py P6\n'
+				'./split.py P6',
+	formatter_class=RawTextHelpFormatter
+)
+parser.add_argument(
+	'assignment_dir',
+	help='Directory where student submissions are located.\n'
+		 'Directory structure should be as follows: \n'
+		 'assignment_dir/\n'
+		 '├── raw/\n'
+		 '│   ├── student1/\n'
+		 '│   ├── student2/\n'
+		 '│   └── ...\n'
+		 '└── config.py'
+)
+
+args = parser.parse_args()
+
 
 def distribute(assignment_dir):
 	from ta import normalize_ta_list, ta_list
@@ -61,7 +88,7 @@ def distribute(assignment_dir):
 	ta_assignment = list(
 		math.floor(total_students * ta.percentage) for i, ta in enumerate(ta_list)
 	)
-	rem = total_students - sum(ta_assignment)	
+	rem = total_students - sum(ta_assignment)
 	if rem > 0:
 		ta_assignment = list(p + (1 if i < rem else 0) for i, p in enumerate(ta_assignment))
 	for (ta, num) in zip(ta_list, ta_assignment):
@@ -92,32 +119,10 @@ def distribute(assignment_dir):
 		])
 
 
-if __name__ == '__main__':
-	from argparse import ArgumentParser, RawTextHelpFormatter
-
-	parser = ArgumentParser(
-		description='Distribute grading of student project submissions among TAs. \n\n'
-					'After running the script, a new folder called dist '
-					'will be created as a subdirectory of assignment_dir '
-					'containing TA names. Each TA folder will have their '
-					'assigned students. \n\n'
-					'example usage:\n'
-					'python3 split.py P6\n'
-					'./split.py P6',
-		formatter_class=RawTextHelpFormatter
-	)
-	parser.add_argument(
-		'assignment_dir',
-		help='Directory where student submissions are located.\n'
-			 'Directory structure should be as follows: \n'
-			 'assignment_dir/\n'
-			 '├── raw/\n'
-			 '│   ├── student1/\n'
-			 '│   ├── student2/\n'
-			 '│   └── ...\n'
-			 '└── config.py'
-	)
-
-	args = parser.parse_args()
-
+def main():
 	distribute(args.assignment_dir)
+
+
+if __name__ == '__main__':
+	main()
+
