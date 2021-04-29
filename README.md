@@ -32,7 +32,7 @@ If you're interested in using `mossum` you will also need to install
 So you don't clutter your global pip, I would first create a virtual
 environment. Then, to install, run
 
-`pip install git+https://github.com/danzou56/ta-toolkit@main`
+`pip install git+https://github.com/danzou56/tatoolkit@main`
 
 If you have the repository downloaded locally (perhaps because you're
 performing modifications to my buggy code), use
@@ -45,7 +45,11 @@ to install, and
 
 to update following committing modifications. For example, I use,
 
-`pip install -U --force-reinstall --no-deps git+file:///home/dan/workspace/ta-toolkit@main`
+`pip install -U --force-reinstall --no-deps git+file:///home/dan/workspace/tatoolkit@main`
+
+You can also update from git with 
+
+`pip install -U --force-reinstall --no-deps git+https://github.com/danzou56/tatoolkit@main`
 
 ## Installation via Cloning
 
