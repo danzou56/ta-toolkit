@@ -3,7 +3,7 @@
 This pip package provides a utility to distribute grading load among TAs using
 files downloaded from the UMD submit server. The pip package also includes
 `mossum` as a dependency so Moss results are easier to analyze (specifically, 
-it will install a personally modified version of `mossum`; you can change this
+it will install a personally modified version of [`mossum`](https://github.com/danzou56/mossum); you can change this
 in `setup.py`).
 
 ## Why is this a pip package?
@@ -51,7 +51,9 @@ For example, I use
 
 `pip install -U --force-reinstall --no-deps git+file:///home/dan/workspace/tatoolkit@main`
 
-If a version change occurred, it is unecessary to include `--force-reinstall` and `--no-deps`
+If a version change occurred, it is unecessary to include `--force-reinstall` and `--no-deps`.
+
+On first install (and probably subsequent updates), include `--no-deps` if you would not like to install mossum.
 
 ## Installation via Cloning
 
