@@ -34,12 +34,16 @@ environment. Then, to install, run
 
 `pip install git+https://github.com/danzou56/tatoolkit@main`
 
+and to update, run
+
+`pip install -U --force-reinstall --no-deps git+https://github.com/danzou56/tatoolkit@main`
+
 If you have the repository downloaded locally (perhaps because you're
-performing modifications to my buggy code), use
+performing modifications to my buggy code), to install, run
 
 `pip install git+file:///absolute/path@branch`
 
-to install, and
+and to update after committing modifications, run
 
 `pip install -U --force-reinstall --no-deps git+file:///absolute/path@branch`
 
@@ -47,9 +51,7 @@ to update following committing modifications. For example, I use,
 
 `pip install -U --force-reinstall --no-deps git+file:///home/dan/workspace/tatoolkit@main`
 
-You can also update from git with 
-
-`pip install -U --force-reinstall --no-deps git+https://github.com/danzou56/tatoolkit@main`
+If a version change occurred, it is unecessary to include `--force-reinstall` and `--no-deps`
 
 ## Installation via Cloning
 
