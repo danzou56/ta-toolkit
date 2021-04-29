@@ -47,7 +47,7 @@ and to update after committing modifications, run
 
 `pip install -U --force-reinstall --no-deps git+file:///absolute/path@branch`
 
-to update following committing modifications. For example, I use,
+For example, I use
 
 `pip install -U --force-reinstall --no-deps git+file:///home/dan/workspace/tatoolkit@main`
 
